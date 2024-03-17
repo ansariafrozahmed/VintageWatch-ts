@@ -1,0 +1,13 @@
+USER_TABLE
+
+user_id
+user_name
+user_email
+user_password
+user_profile_picture
+user_city
+user_phone_code
+user_phone_number
+user_eligible_for_listing
+user_created_at
+user_updated_at
