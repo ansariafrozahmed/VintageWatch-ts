@@ -15,7 +15,7 @@ app.use(
 
 //User Signup Api
 app.post("/api/userSignup", async (req, res) => {
-  const { name, email, password, city } = req.body;
+  const { first_name, last_name, email, password, city } = req.body;
   try {
     //Hashing The Password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,8 +32,8 @@ app.post("/api/userSignup", async (req, res) => {
     }
     //Query
     const adduserquery =
-      "INSERT INTO vwuser (user_name,user_email,user_password,user_city) VALUES ($1, $2,$3,$4) RETURNING *";
-    const values = [name, email, hashedPassword, city];
+      "INSERT INTO vwuser (user_first_name,user_last_name,user_email,user_password,user_city) VALUES ($1, $2,$3,$4,$5) RETURNING *";
+    const values = [first_name, last_name, email, hashedPassword, city];
 
     const result = await pool.query(adduserquery, values);
 
@@ -71,16 +71,36 @@ app.post("/api/userSignin", async (req, res) => {
     // Return user data upon successful login
     const userData = {
       id: userResult.rows[0].user_id,
-      name: userResult.rows[0].user_name,
+      first_name: userResult.rows[0].user_first_name,
+      last_name: userResult.rows[0].user_last_name,
       email: userResult.rows[0].user_email,
       city: userResult.rows[0].user_city,
       role: userResult.rows[0].user_role,
     };
 
-    res.status(200).json({ userData });
+    res.status(200).json(userData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//GET User Data By ID Api
+app.get("/api/getUserProfileData/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const query =
+      "SELECT user_id, user_first_name, user_last_name, user_email, user_profile_picture, user_city, user_phone_code, user_phone_number, user_eligible_for_listing, user_created_at, user_updated_at FROM vwuser WHERE user_id = $1;";
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).send({ error_message: "User not found" });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching user profile data:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 

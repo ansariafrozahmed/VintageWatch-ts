@@ -1,8 +1,8 @@
 import { BACKEND_URL } from "@/app/page";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "creds",
@@ -25,10 +25,12 @@ const authOptions: NextAuthOptions = {
           });
           const data = await response.json();
 
-          if (response.ok && data.userData) {
-            return {
-              ...data.userData,
-            };
+          if (response.ok && data) {
+            // console.log(data);
+            const user: User = { ...data, name: data };
+            // console.log(user);
+
+            return user;
           } else {
             return null;
           }

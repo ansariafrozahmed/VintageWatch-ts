@@ -1,17 +1,64 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Space } from "antd";
 import Link from "next/link";
 import { AtSign, LocateIcon, Lock, MapPin, User2 } from "lucide-react";
+import { BACKEND_URL } from "@/app/page";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+import { useForm } from "antd/es/form/Form";
 
 const SignupForm: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
+  const [form] = useForm();
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const onFinish = async (values: object) => {
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/userSignup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        form.resetFields();
+        Swal.fire({
+          title: "Success",
+          text: "Registered Successfully!",
+          icon: "success",
+        }).then(() => {
+          router.push("/auth/signin");
+        });
+      } else if (response.status === 400) {
+        Swal.fire({
+          title: "Please try Again",
+          text: "Email Already Exist!",
+          icon: "error",
+        });
+      } else {
+        Swal.fire({
+          title: "Please try Again",
+          text: "Internal Server Error!",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Please try Again",
+        text: "Internal Server Error!",
+        icon: "error",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-full">
       <div className="w-[350px] space-y-2 py-5">
         {/* <h2 className="font-logoFont mb-5 text-4xl text-left">Vintage Watch</h2> */}
         <h2 className="text-3xl font-semibold">Sign up</h2>
@@ -23,27 +70,46 @@ const SignupForm: React.FC = () => {
         </h3>
       </div>
       <Form
-        name="signuo_form"
+        form={form}
+        name="signup_form"
         className="signup-form w-[350px]"
         initialValues={{ remember: true }}
         onFinish={onFinish}
         size="large"
       >
-        <Form.Item
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your name!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<User2 size={15} strokeWidth={1.5} />}
-            placeholder="Name"
-            className="border-gray-500 py-2 text-base"
-          />
-        </Form.Item>
+        <div className="flex gap-2">
+          <Form.Item
+            name="first_name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your first name!",
+              },
+            ]}
+          >
+            <Input
+              prefix={<User2 size={15} strokeWidth={1.5} />}
+              placeholder="First Name"
+              className="border-gray-500 py-2 text-base"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="last_name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your last name!",
+              },
+            ]}
+          >
+            <Input
+              prefix={<User2 size={15} strokeWidth={1.5} />}
+              placeholder="Last Name"
+              className="border-gray-500 py-2 text-base"
+            />
+          </Form.Item>
+        </div>
 
         <Form.Item
           name="email"
@@ -120,9 +186,10 @@ const SignupForm: React.FC = () => {
           <Button
             type="default"
             htmlType="submit"
+            loading={submitting}
             className="login-form-button w-full bg-gray-800 text-white h-12 text-lg"
           >
-            Sign Up
+            {submitting ? <span>Signing up..</span> : <span>Sign up</span>}
           </Button>
         </Form.Item>
       </Form>
