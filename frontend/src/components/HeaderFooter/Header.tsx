@@ -66,9 +66,11 @@ const Header = () => {
                   />
                 </div>
                 <div className="">
-                  <h2 className="text-sm font-medium">Ansari Afroz Ahmed</h2>
+                  <h2 className="text-sm font-medium">
+                    {session?.user?.first_name} {session?.user?.last_name}
+                  </h2>
                   <h3 className="-mt-1 text-xs text-gray-700">
-                    ansariafroz.py@gmail.com
+                    {session?.user?.email}
                   </h3>
                 </div>
               </div>

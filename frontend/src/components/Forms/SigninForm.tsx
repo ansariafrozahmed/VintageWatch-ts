@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
 import Link from "next/link";
@@ -32,8 +32,6 @@ const SigninForm: React.FC = () => {
           title: "Success!",
           text: "Logged In Successfully!",
           icon: "success",
-        }).then(() => {
-          router.push("/");
         });
       }
     } catch (error) {
@@ -48,12 +46,14 @@ const SigninForm: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status]);
+
   if (status === "loading") {
     return <span>Loading...</span>;
-  }
-
-  if (status === "authenticated") {
-    router.push("/");
   }
 
   return (

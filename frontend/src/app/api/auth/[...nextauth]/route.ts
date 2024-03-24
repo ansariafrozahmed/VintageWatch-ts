@@ -23,11 +23,11 @@ export const authOptions: NextAuthOptions = {
             },
             body: JSON.stringify(credentials),
           });
-          const data = await response.json();
+          const user = await response.json();
 
-          if (response.ok && data) {
+          if (user) {
             // console.log(data);
-            const user: User = { ...data, name: data };
+            // const user: User = { ...data, name: data };
             // console.log(user);
 
             return user;
@@ -44,6 +44,15 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      return { ...token, ...user };
+    },
+    async session({ session, token, user }) {
+      session.user = token;
+      return session;
+    },
   },
   pages: {
     signIn: "/auth/signin",
