@@ -9,6 +9,8 @@ import { BsPerson } from "react-icons/bs";
 import { BiMenuAltRight } from "react-icons/bi";
 import { VscChromeClose } from "react-icons/vsc";
 import { useSession } from "next-auth/react";
+import { Popover } from "antd";
+import { LogOut, User } from "lucide-react";
 
 const Header = () => {
   const { data: session, status } = useSession();
@@ -33,6 +35,23 @@ const Header = () => {
     };
   }, [lastScrollY]);
 
+  const content = (
+    <div className="w-[200px]">
+      <ul className="space-y-1">
+        <Link href={"/profile"}>
+          <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
+            <User size={18} />
+            My Account
+          </li>
+        </Link>
+        <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
+          <LogOut size={18} />
+          Sign Out
+        </li>
+      </ul>
+    </div>
+  );
+
   return (
     <header
       className={`w-full h-[12svh] shadow-md bg-white flex items-center justify-between z-20 sticky top-0 transition-transform duration-300 ${show}`}
@@ -56,7 +75,12 @@ const Header = () => {
 
         <div className="flex items-center gap-2 text-black">
           {session ? (
-            <Link href={"/profile"}>
+            <Popover
+              className="cursor-pointer"
+              content={content}
+              trigger="click"
+              placement="bottom"
+            >
               <div className="flex items-center gap-2 transition-all ease-in-out hover:bg-gray-100 p-2 rounded-full pr-4">
                 <div className="h-8 w-8 overflow-hidden rounded-full">
                   <img
@@ -74,7 +98,7 @@ const Header = () => {
                   </h3>
                 </div>
               </div>
-            </Link>
+            </Popover>
           ) : (
             <Link href={"/auth/signin"}>
               <div className="flex items-center gap-1 transition-all ease-in-out hover:bg-gray-100 py-2 rounded-full px-4">

@@ -3,6 +3,7 @@ import { BACKEND_URL } from "@/app/page";
 import { MapPin } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+import ProfileUpdateForm from "./ProfileUpdateForm";
 
 const AccountDetails: React.FC = () => {
   const [profileData, setProfileData] = useState<string>("");
@@ -48,7 +49,9 @@ const AccountDetails: React.FC = () => {
         </div>
       </div>
       <hr />
-      AccountDetails
+      <div className="py-2">
+        <ProfileUpdateForm />
+      </div>
     </div>
   );
 };

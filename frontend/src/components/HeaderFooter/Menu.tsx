@@ -50,7 +50,7 @@ const Menu: React.FC<MenuProps> = ({ showCatMenu, setShowCatMenu }) => {
                   <BsChevronDown size={14} />
 
                   {showCatMenu && (
-                    <ul className="bg-white absolute top-6 left-0 min-w-[256px] rounded-lg px-1 py-1 text-black shadow-lg">
+                    <ul className="bg-white absolute top-6 left-0 min-w-[256px] rounded-lg px-1 py-5 text-black shadow-lg">
                       {subMenuData.map((submenu) => {
                         return (
                           <Link
