@@ -8,6 +8,7 @@ import { BACKEND_URL } from "@/app/page";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useForm } from "antd/es/form/Form";
+import { signIn } from "next-auth/react";
 
 const SignupForm: React.FC = () => {
   const [form] = useForm();
@@ -15,13 +16,18 @@ const SignupForm: React.FC = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const onFinish = async (values: object) => {
     setSubmitting(true);
+
+    const updatedValues = {
+      ...values,
+      user_createdAt: new Date().toISOString(),
+    };
     try {
       const response = await fetch(`${BACKEND_URL}/api/userSignup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(updatedValues),
       });
 
       if (response.ok) {

@@ -14,3 +14,19 @@ user_store_bio
 user_eligible_for_listing
 user_created_at
 user_updated_at
+
+PRODUCT_LISTING
+
+lid				(int8)
+created_at			(timestampz)
+updated_at			(timestampz)
+title				(text)
+description			(text)
+features			(jsonb)
+condition			(text)
+brand_name			(text)
+contact_country_code		(int2)
+contact_number			(int8)
+whatsapp_country_code		(int2)
+whatsapp_number			(int8)
+uploaded_by_user_id		(int8)

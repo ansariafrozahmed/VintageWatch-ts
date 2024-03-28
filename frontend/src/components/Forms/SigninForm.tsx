@@ -23,15 +23,18 @@ const SigninForm: React.FC = () => {
         redirect: false,
       });
 
-      if (response?.error) {
-        // Handle sign-in error
-        console.error(response.error);
-      } else {
+      if (response?.ok) {
         form.resetFields();
         Swal.fire({
           title: "Success!",
           text: "Logged In Successfully!",
           icon: "success",
+        });
+      } else if (response?.status === 401) {
+        Swal.fire({
+          title: "Unauthorized!",
+          text: "Please enter correct credentials!",
+          icon: "error",
         });
       }
     } catch (error) {

@@ -5,7 +5,8 @@ const app = express();
 
 //User Signup Api
 app.post("/userSignup", async (req, res) => {
-  const { first_name, last_name, email, password, city } = req.body;
+  const { first_name, last_name, email, password, city, user_createdAt } =
+    req.body;
   try {
     //Hashing The Password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -22,8 +23,15 @@ app.post("/userSignup", async (req, res) => {
     }
     //Query
     const adduserquery =
-      "INSERT INTO vwuser (user_first_name,user_last_name,user_email,user_password,user_city) VALUES ($1, $2,$3,$4,$5) RETURNING *";
-    const values = [first_name, last_name, email, hashedPassword, city];
+      "INSERT INTO vwuser (user_first_name,user_last_name,user_email,user_password,user_city, user_created_at) VALUES ($1, $2,$3,$4,$5,$6) RETURNING *";
+    const values = [
+      first_name,
+      last_name,
+      email,
+      hashedPassword,
+      city,
+      user_createdAt,
+    ];
 
     const result = await pool.query(adduserquery, values);
 
@@ -44,7 +52,7 @@ app.post("/userSignin", async (req, res) => {
     const userResult = await pool.query(getUserQuery);
 
     if (userResult.rows.length === 0) {
-      res.status(401).json({ error: "Invalid email or password" });
+      res.status(401).json({ error: "Invalid Email" });
       return;
     }
 
@@ -54,7 +62,7 @@ app.post("/userSignin", async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
 
     if (!passwordMatch) {
-      res.status(401).json({ error: "Invalid email or password" });
+      res.status(402).json({ error: "Invalid Password" });
       return;
     }
 
@@ -110,9 +118,22 @@ app.put("/updateUserProfileData/:id", async (req, res) => {
       user_country,
       user_state,
       user_zip_code,
+      user_updatedAt,
     } = req.body;
 
-    console.log(req.body, id);
+    // Check if the provided phone number already exists for a different user
+    const existingPhoneNumberQuery = `
+      SELECT user_id FROM vwuser WHERE user_phone_number = '${user_phone_number}' AND user_id != '${id}'
+    `;
+    const existingPhoneNumberResult = await pool.query(
+      existingPhoneNumberQuery
+    );
+
+    if (existingPhoneNumberResult.rows.length > 0) {
+      return res
+        .status(400)
+        .send("Phone number already exists for another user");
+    }
 
     // Construct the update query
     const updateQuery = `
@@ -128,12 +149,13 @@ app.put("/updateUserProfileData/:id", async (req, res) => {
         user_store_bio = '${user_store_bio}',
         user_country = '${user_country}',
         user_state = '${user_state}',
-        user_zip_code = ${user_zip_code}
+        user_zip_code = ${user_zip_code},
+        user_updated_at = '${user_updatedAt}'
       WHERE user_id = '${id}'
     `;
 
     // Execute the update query
-    const result = await pool.query(updateQuery);
+    await pool.query(updateQuery);
 
     res.status(200).send("User profile data updated successfully");
   } catch (error) {
