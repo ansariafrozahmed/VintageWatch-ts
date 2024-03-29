@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
           });
           const user = await response.json();
 
-          if (user) {
+          if (response.ok && user) {
             // console.log(data);
             // const user: User = { ...data, name: data };
             // console.log(user);

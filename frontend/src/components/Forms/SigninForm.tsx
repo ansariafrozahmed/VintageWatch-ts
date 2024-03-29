@@ -30,7 +30,7 @@ const SigninForm: React.FC = () => {
           text: "Logged In Successfully!",
           icon: "success",
         });
-      } else if (response?.status === 401) {
+      } else {
         Swal.fire({
           title: "Unauthorized!",
           text: "Please enter correct credentials!",
