@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Navigation } from "swiper/modules";
@@ -8,9 +8,9 @@ import { Pagination } from "swiper/modules";
 import "swiper/css/pagination";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { BACKEND_URL } from "@/app/page";
 
 const ProductSlider = () => {
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   return (
     <div className="py-10 lg:py-20 mx-5 lg:mx-14">
       <div className="flex items-center justify-between leading-none font-SecondaryFont">
@@ -63,27 +63,29 @@ const ProductSlider = () => {
             },
           }}
         >
-          {data.map((index) => (
-            <SwiperSlide key={index}>
-              <div className="border border-gray-600 shadow-md ">
-                <Link href={"/"}>
-                  <div className="aspect-[3/4]">
-                    <img
-                      className="object-cover object-center h-full w-full"
-                      src="https://images.pexels.com/photos/47856/rolex-wrist-watch-clock-gmt-47856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                      alt=""
-                    />
-                  </div>
-                  <div className="px-5 py-2 space-y-1 text-center">
-                    <h2 className="text-gray-700 text-sm">Rolex</h2>
-                    <h3 className="line-clamp-1">
-                      Vintage watch and many more watches
-                    </h3>
-                  </div>
-                </Link>
-              </div>
-            </SwiperSlide>
-          ))}
+          {Array(10)
+            .fill()
+            .map((index) => (
+              <SwiperSlide key={index}>
+                <div className="border border-gray-600 shadow-md ">
+                  <Link href={"/"}>
+                    <div className="aspect-[3/4]">
+                      <img
+                        className="object-cover object-center h-full w-full"
+                        src="https://images.pexels.com/photos/47856/rolex-wrist-watch-clock-gmt-47856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                        alt=""
+                      />
+                    </div>
+                    <div className="px-5 py-2 space-y-1 text-center">
+                      <h2 className="text-gray-700 text-sm">Rolex</h2>
+                      <h3 className="line-clamp-1">
+                        Vintage watch and many more watches
+                      </h3>
+                    </div>
+                  </Link>
+                </div>
+              </SwiperSlide>
+            ))}
           <div className="swiper-button-next !text-white"></div>
           <div className="swiper-button-prev !text-white"></div>
         </Swiper>

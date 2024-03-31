@@ -3,24 +3,12 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Form,
-  type FormProps,
   Input,
   InputNumber,
-  message,
   Upload,
   type UploadProps,
-  Modal,
 } from "antd";
-import {
-  AtSign,
-  Check,
-  Mail,
-  MailCheck,
-  MapPin,
-  Phone,
-  Store,
-  User2,
-} from "lucide-react";
+import { Mail, MapPin, Phone, Store, User2 } from "lucide-react";
 import TextArea from "antd/es/input/TextArea";
 // import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/app/page";
@@ -29,96 +17,26 @@ import Swal from "sweetalert2";
 const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = async (data: any) => {
-    setIsModalOpen(true);
-    console.log(data);
-
-    // try {
-    //   const response = await fetch(`${BACKEND_URL}/api/sendOtpOnUserEmail`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ email }),
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error("Failed to send OTP");
-    //   }
-    // } catch (error) {
-    //   console.error("Error sending OTP:", error);
-    //   // Handle error, show notification, etc.
-    // }
-  };
-
-  const handleOtpSubmit = async (values: any) => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/verifyOTP`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.user_email,
-          otp: values.otp,
-        }),
-      });
-
-      if (response.ok) {
-        // OTP verification successful, show success message
-        // Close the modal
-        setIsModalOpen(false);
-        // Show success message
-        Swal.fire({
-          title: "Success",
-          text: "OTP Verified Successfully!",
-          icon: "success",
-        });
-        // Refresh data or update state as needed
-      } else {
-        throw new Error("Invalid OTP");
-      }
-    } catch (error) {
-      console.error("Error verifying OTP:", error);
-      // Handle error, show notification, etc.
-      // Show error message
-      Swal.fire({
-        title: "Error",
-        text: "Invalid OTP!",
-        icon: "error",
-      });
-    }
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
 
   useEffect(() => {
     form.setFieldsValue(data);
-  }, []);
+  }, [data]);
 
-  const props: UploadProps = {
-    name: "file",
-    multiple: false,
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.fileList);
-      }
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
+  // const props: UploadProps = {
+  //   name: "file",
+  //   multiple: false,
+  //   onChange(info) {
+  //     const { status } = info.file;
+  //     if (status !== "uploading") {
+  //       console.log(info.fileList);
+  //     }
+  //     if (status === "done") {
+  //       message.success(`${info.file.name} file uploaded successfully.`);
+  //     } else if (status === "error") {
+  //       message.error(`${info.file.name} file upload failed.`);
+  //     }
+  //   },
+  // };
 
   const onFinish = async (values: object) => {
     // console.log(values);
@@ -177,7 +95,7 @@ const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
     console.log("Failed:", errorInfo);
   };
 
-  const lastUpdate = new Date(data.user_updated_at).toLocaleDateString();
+  const lastUpdate = new Date(data?.user_updated_at).toLocaleDateString();
 
   return (
     <div className="max-w-[600px]">
@@ -264,7 +182,7 @@ const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
           ]}
         >
           <Input
-            disabled={data.user_email_verified}
+            disabled={data?.user_email_verified}
             prefix={<Mail size={15} strokeWidth={1.5} />}
             placeholder="Email"
             className="border-gray-500 py-2 text-base"

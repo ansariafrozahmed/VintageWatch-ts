@@ -3,6 +3,21 @@ const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 const app = express();
 const nodemailer = require("nodemailer");
+
+// Define your OTP generation function
+function generateOTP() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+// Create a Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "ansariafroz720@gmail.com",
+    pass: "saab jfnz zfrc qgfx",
+  },
+});
+
 //User Signup Api
 app.post("/userSignup", async (req, res) => {
   const { first_name, last_name, email, password, city, user_createdAt } =
@@ -84,8 +99,9 @@ app.post("/userSignin", async (req, res) => {
 });
 
 //GET User Data By ID Api
-app.get("/getUserProfileData/:id", async (req, res) => {
+app.post("/getUserProfileData/:id", async (req, res) => {
   const { id } = req.params;
+  // console.log(id);
   try {
     const query =
       "SELECT user_id, user_first_name, user_last_name, user_email, user_profile_picture, user_city, user_phone_code, user_phone_number, user_eligible_for_listing, user_created_at, user_updated_at, user_store_name, user_store_bio, user_country, user_state, user_zip_code, user_email_verified FROM vwuser WHERE user_id = $1;";
@@ -164,20 +180,6 @@ app.put("/updateUserProfileData/:id", async (req, res) => {
   }
 });
 
-// Define your OTP generation function
-function generateOTP() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
-// Create a Nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "ansariafroz720@gmail.com",
-    pass: "saab jfnz zfrc qgfx",
-  },
-});
-
 //Send OTP on user email and store in DATABASE
 app.post("/sendOtpOnUserEmail", async (req, res) => {
   try {
@@ -233,6 +235,20 @@ app.post("/verifyOTP", async (req, res) => {
   } catch (error) {
     console.error("Error verifying OTP:", error);
     res.status(500).json({ error: "Failed to verify OTP" });
+  }
+});
+
+app.get("/getUser", async (req, res) => {
+  try {
+    // Execute SQL query to retrieve data from the view
+    const query = "SELECT * FROM vwuser";
+    const result = await pool.query(query);
+
+    // Send the result back as a response
+    res.status(200).send(result.rows);
+  } catch (error) {
+    console.error("Error executing SQL query:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 

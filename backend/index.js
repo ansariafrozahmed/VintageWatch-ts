@@ -9,7 +9,7 @@ const PORT = 4000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://vintagewatch.vercel.app/"],
+    origin: ["http://localhost:3000", "https://vintagewatch.vercel.app"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })

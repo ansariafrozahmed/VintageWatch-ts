@@ -23,7 +23,6 @@ const AccountDetails: React.FC = () => {
 
   const showModal = async (email: any) => {
     setIsModalOpen(true);
-
     try {
       const response = await fetch(`${BACKEND_URL}/api/sendOtpOnUserEmail`, {
         method: "POST",
@@ -91,17 +90,29 @@ const AccountDetails: React.FC = () => {
       if (session) {
         const profileId = session.user?.id;
 
-        const response = await fetch(
-          `${BACKEND_URL}/api/getUserProfileData/${profileId}`
-        );
-        const result: ProfileData = await response.json();
-        setProfileData(result);
-        console.log(result);
+        try {
+          const response = await fetch(
+            `${BACKEND_URL}/api/getUserProfileData/${profileId}`,
+            {
+              method: "POST",
+            }
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const result: ProfileData = await response.json();
+          setProfileData(result);
+          // console.log("Profile data fetched:", result);
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      } else {
+        // console.log("Session not available");
       }
     };
 
     fetchProfileData();
-  }, [shouldRefetch]);
+  }, [shouldRefetch, session]);
 
   const handleProfileUpdate = () => {
     setShouldRefetch(!shouldRefetch);
@@ -120,9 +131,11 @@ const AccountDetails: React.FC = () => {
     );
   }
 
-  if (status === "loading" || !profileData) {
-    return <span>Loading...</span>;
-  }
+  // if (status === "loading" || !profileData) {
+  //   console.log(status);
+
+  //   return <span>Loading...</span>;
+  // }
 
   return (
     <div className="flex flex-col lg:flex-row gap-5 w-full p-5 lg:py-5 lg:px-10">
@@ -146,9 +159,9 @@ const AccountDetails: React.FC = () => {
           <div>
             <div className="flex items-center gap-1">
               <h2 className="flex items-center gap-1 text-[1.3rem] font-SecondaryFont">
-                {profileData.user_first_name} {profileData.user_last_name}
+                {profileData?.user_first_name} {profileData?.user_last_name}
               </h2>
-              {profileData.user_eligible_for_listing ? (
+              {profileData?.user_eligible_for_listing ? (
                 <Tooltip title="Eligible for listing" color="green">
                   <Verified size={20} color="green" />
                 </Tooltip>
@@ -163,15 +176,15 @@ const AccountDetails: React.FC = () => {
             </h3> */}
             <div className="flex gap-1 items-center">
               <h3 className="flex items-center gap-1 text-gray-800 text-sm font-medium">
-                <Mail size={18} /> {profileData.user_email}
+                <Mail size={18} /> {profileData?.user_email}
               </h3>
-              {profileData.user_email_verified ? (
+              {profileData?.user_email_verified ? (
                 <>
                   <Check size={20} color="green" strokeWidth={3} />
                 </>
               ) : (
                 <span
-                  onClick={() => showModal(profileData.user_email)}
+                  onClick={() => showModal(profileData?.user_email)}
                   className="text-sm font-medium cursor-pointer text-red-500 underline"
                 >
                   verify
@@ -193,7 +206,7 @@ const AccountDetails: React.FC = () => {
           <p>
             Please enter the 4 digit code you received on{" "}
             <span className="text-blue-gray-500 font-medium underline">
-              {profileData.user_email}
+              {profileData?.user_email}
             </span>
           </p>
         </div>
