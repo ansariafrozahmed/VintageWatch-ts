@@ -141,7 +141,7 @@ const Header = () => {
               <div className="flex items-center gap-2 transition-all ease-in-out hover:bg-gray-100 p-2 rounded-full lg:pr-4">
                 <div className="h-8 w-8 overflow-hidden rounded-full">
                   <img
-                    src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png"
+                    src="https://st4.depositphotos.com/14903220/22197/v/450/depositphotos_221970610-stock-illustration-abstract-sign-avatar-icon-profile.jpg"
                     alt=""
                     className="h-ful w-full object-cover"
                   />
@@ -156,9 +156,18 @@ const Header = () => {
             </Popover>
           ) : (
             <Link href={"/auth/signin"}>
-              <div className="flex items-center gap-1 transition-all ease-in-out hover:bg-gray-100 py-2 rounded-full px-4">
-                <BsPerson size={20} />
-                <h2 className=" font-medium">Sign in</h2>
+              <div className="flex items-center gap-2 transition-all ease-in-out hover:bg-gray-100 p-2 rounded-full lg:pr-4">
+                <div className="h-8 w-8 overflow-hidden rounded-full">
+                  <img
+                    src="https://st4.depositphotos.com/14903220/22197/v/450/depositphotos_221970610-stock-illustration-abstract-sign-avatar-icon-profile.jpg"
+                    alt=""
+                    className="h-ful w-full object-cover"
+                  />
+                </div>
+                <div className="hidden lg:block">
+                  <h2 className="text-sm font-medium">Account</h2>
+                  <h3 className="-mt-1 text-xs text-gray-700">Sign in</h3>
+                </div>
               </div>
             </Link>
           )}

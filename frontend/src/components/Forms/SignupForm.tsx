@@ -65,7 +65,7 @@ const SignupForm: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
-      <div className="w-[350px] space-y-2 py-5">
+      <div className="w-[350px] space-y-2 py-3 lg:py-5">
         {/* <h2 className="font-logoFont mb-5 text-4xl text-left">Vintage Watch</h2> */}
         <h2 className="text-3xl font-semibold">Sign up</h2>
         <h3 className="text-gray-700 font-medium">

@@ -55,10 +55,11 @@ const AccountDetails: React.FC = () => {
 
       if (response.ok) {
         setIsModalOpen(false);
+        setShouldRefetch(!shouldRefetch);
         form.resetFields();
         Swal.fire({
           title: "Success",
-          text: "OTP Verified Successfully!",
+          text: "Email Verified Successfully!",
           icon: "success",
         });
         // Refresh data or update state as needed
