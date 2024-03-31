@@ -180,13 +180,20 @@ app.put("/updateUserProfileData/:id", async (req, res) => {
   }
 });
 
-//Send OTP on user email and store in DATABASE
+// Send OTP on user email and store in DATABASE
 app.post("/sendOtpOnUserEmail", async (req, res) => {
   try {
     const { email } = req.body;
 
     // Generate OTP
     const otp = generateOTP();
+
+    const timestamp = new Date().toISOString();
+    const query = {
+      text: `UPDATE vwuser SET email_otp = $1, otp_timestamp = $2 WHERE user_email = $3`,
+      values: [otp, timestamp, email],
+    };
+    await pool.query(query);
 
     // Send OTP to the user's email
     await transporter.sendMail({
@@ -196,12 +203,6 @@ app.post("/sendOtpOnUserEmail", async (req, res) => {
       text: `Your OTP is: ${otp}`,
     });
 
-    const query = {
-      text: `UPDATE vwuser SET email_otp = $1 WHERE user_email = $2`,
-      values: [otp, email],
-    };
-    await pool.query(query);
-
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -209,12 +210,12 @@ app.post("/sendOtpOnUserEmail", async (req, res) => {
   }
 });
 
-//Verify OTP
+// Verify OTP
 app.post("/verifyOTP", async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    const query = `SELECT email_otp FROM vwuser WHERE user_email = $1`;
+    const query = `SELECT email_otp, otp_timestamp FROM vwuser WHERE user_email = $1`;
     const result = await pool.query(query, [email]);
 
     if (result.rows.length === 0) {
@@ -222,6 +223,14 @@ app.post("/verifyOTP", async (req, res) => {
     }
 
     const storedOTP = result.rows[0].email_otp;
+    const otpTimestamp = result.rows[0].otp_timestamp;
+
+    // Check if OTP is expired (more than 10 seconds old)
+    const currentTime = Date.now(); // Current timestamp in milliseconds
+    const otpValidityPeriod = 120 * 1000; // 120 seconds in milliseconds
+    if (currentTime - otpTimestamp > otpValidityPeriod) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
 
     if (storedOTP === otp) {
       // OTP verification successful

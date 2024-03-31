@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   InputNumber,
+  Skeleton,
   Upload,
   type UploadProps,
 } from "antd";
@@ -99,28 +100,30 @@ const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
 
   return (
     <div className="max-w-[600px]">
-      <div className="leading-tight">
-        <h2 className="text-[1.2rem] lg:text-[1.5rem] font-medium">
-          Update your profile details
-        </h2>
-        <p className="text-gray-800 text-[0.8rem] lg:text-[0.9rem]">
-          Keep your profile upto date to become eligible for listing..
-        </p>
-      </div>
-      <div className="py-5">
-        <h2 className="py-2 px-4 text-gray-100 bg-gradient-to-r from-green-400 to-white rounded-lg font-medium text-xs">
-          Last updated on : {lastUpdate}
-        </h2>
-      </div>
-      <Form
-        form={form}
-        name="update_form"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        size="large"
-      >
-        {/* <Form.Item
+      {data ? (
+        <>
+          <div className="leading-tight">
+            <h2 className="text-[1.2rem] lg:text-[1.5rem] font-medium">
+              Update your profile details
+            </h2>
+            <p className="text-gray-800 text-[0.8rem] lg:text-[0.9rem]">
+              Keep your profile upto date to become eligible for listing..
+            </p>
+          </div>
+          <div className="py-5">
+            <h2 className="py-2 px-4 text-gray-100 bg-gradient-to-r from-green-400 to-white rounded-lg font-medium text-xs">
+              Last updated on : {lastUpdate}
+            </h2>
+          </div>
+          <Form
+            form={form}
+            name="update_form"
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            size="large"
+          >
+            {/* <Form.Item
           name="user_profile_picture"
           className="w-fuull"
           rules={[
@@ -134,203 +137,219 @@ const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
             <Button icon={<UploadOutlined />}>Click to Upload</Button>
           </Upload>
         </Form.Item> */}
-        <div className="flex gap-2 items-center">
-          <Form.Item
-            name="user_first_name"
-            className="w-full"
-            rules={[
-              {
-                required: true,
-                message: "Please input your first name!",
-              },
-            ]}
-          >
-            <Input
-              prefix={<User2 size={15} strokeWidth={1.5} />}
-              placeholder="First Name"
-              className="border-gray-500 py-2 text-base"
-            />
-          </Form.Item>
+            <div className="flex gap-2 items-center">
+              <Form.Item
+                name="user_first_name"
+                className="w-full"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your first name!",
+                  },
+                ]}
+              >
+                <Input
+                  prefix={<User2 size={15} strokeWidth={1.5} />}
+                  placeholder="First Name"
+                  className="border-gray-500 py-2 text-base"
+                />
+              </Form.Item>
 
-          <Form.Item
-            className="w-full"
-            name="user_last_name"
-            rules={[
-              {
-                required: true,
-                message: "Please input your last name!",
-              },
-            ]}
-          >
-            <Input
-              prefix={<User2 size={15} strokeWidth={1.5} />}
-              placeholder="Last Name"
-              className="border-gray-500 py-2 text-base"
-            />
-          </Form.Item>
+              <Form.Item
+                className="w-full"
+                name="user_last_name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your last name!",
+                  },
+                ]}
+              >
+                <Input
+                  prefix={<User2 size={15} strokeWidth={1.5} />}
+                  placeholder="Last Name"
+                  className="border-gray-500 py-2 text-base"
+                />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="user_email"
+              className="w-full"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your email!",
+                  type: "email",
+                },
+              ]}
+            >
+              <Input
+                disabled={data?.user_email_verified}
+                prefix={<Mail size={15} strokeWidth={1.5} />}
+                placeholder="Email"
+                className="border-gray-500 py-2 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="user_country"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your country name!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<MapPin size={15} strokeWidth={1.5} />}
+                placeholder="Country"
+                className="border-gray-500 py-2 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="user_state"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your state name!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<MapPin size={15} strokeWidth={1.5} />}
+                placeholder="State"
+                className="border-gray-500 py-2 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="user_city"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your city!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<MapPin size={15} strokeWidth={1.5} />}
+                placeholder="City"
+                className="border-gray-500 py-2 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="user_zip_code"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your zip code!",
+                },
+              ]}
+            >
+              <InputNumber
+                prefix={<MapPin size={15} strokeWidth={1.5} />}
+                placeholder="Zip Code"
+                className="border-gray-500  w-full text-base"
+              />
+            </Form.Item>
+
+            <div className="flex gap-2 items-center">
+              <Form.Item
+                name="user_phone_code"
+                className="w-[80px]"
+                rules={[
+                  {
+                    required: true,
+                    message: "code",
+                  },
+                ]}
+              >
+                <InputNumber
+                  //   prefix={<User2 size={15} strokeWidth={1.5} />}
+                  placeholder="+1"
+                  className="border-gray-500 w-full text-base"
+                />
+              </Form.Item>
+
+              <Form.Item
+                className="w-full"
+                name="user_phone_number"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your phone number!",
+                  },
+                ]}
+              >
+                <InputNumber
+                  prefix={<Phone size={15} strokeWidth={1.5} />}
+                  placeholder="phone number"
+                  className="border-gray-500 w-full text-base"
+                />
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="user_store_name"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your store name!",
+                },
+              ]}
+            >
+              <Input
+                prefix={<Store size={15} strokeWidth={1.5} />}
+                placeholder="Store Name"
+                className="border-gray-500 py-2 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="user_store_bio"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your store bio!",
+                },
+              ]}
+            >
+              <TextArea
+                placeholder="Store Bio"
+                className="border-gray-500 py-2 !h-40 text-base"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="default"
+                htmlType="submit"
+                loading={submitting}
+                className="login-form-button bg-gray-900 text-white h-10 font-medium uppercase tracking-wider px-5"
+              >
+                {submitting ? <>UPDATING...</> : <>UPDATE</>}
+              </Button>
+            </Form.Item>
+          </Form>
+        </>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {Array(10)
+            .fill()
+            .map((_, index) => (
+              <Skeleton.Input
+                key={index}
+                active
+                // style={{ width: "300px" }}
+                block
+                size="default"
+              />
+            ))}
         </div>
-
-        <Form.Item
-          name="user_email"
-          className="w-full"
-          rules={[
-            {
-              required: true,
-              message: "Please input your email!",
-              type: "email",
-            },
-          ]}
-        >
-          <Input
-            disabled={data?.user_email_verified}
-            prefix={<Mail size={15} strokeWidth={1.5} />}
-            placeholder="Email"
-            className="border-gray-500 py-2 text-base"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="user_country"
-          rules={[
-            {
-              required: true,
-              message: "Please input your country name!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<MapPin size={15} strokeWidth={1.5} />}
-            placeholder="Country"
-            className="border-gray-500 py-2 text-base"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="user_state"
-          rules={[
-            {
-              required: true,
-              message: "Please input your state name!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<MapPin size={15} strokeWidth={1.5} />}
-            placeholder="State"
-            className="border-gray-500 py-2 text-base"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="user_city"
-          rules={[
-            {
-              required: true,
-              message: "Please input your city!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<MapPin size={15} strokeWidth={1.5} />}
-            placeholder="City"
-            className="border-gray-500 py-2 text-base"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="user_zip_code"
-          rules={[
-            {
-              required: true,
-              message: "Please input your zip code!",
-            },
-          ]}
-        >
-          <InputNumber
-            prefix={<MapPin size={15} strokeWidth={1.5} />}
-            placeholder="Zip Code"
-            className="border-gray-500  w-full text-base"
-          />
-        </Form.Item>
-
-        <div className="flex gap-2 items-center">
-          <Form.Item
-            name="user_phone_code"
-            className="w-[80px]"
-            rules={[
-              {
-                required: true,
-                message: "code",
-              },
-            ]}
-          >
-            <InputNumber
-              //   prefix={<User2 size={15} strokeWidth={1.5} />}
-              placeholder="+1"
-              className="border-gray-500 w-full text-base"
-            />
-          </Form.Item>
-
-          <Form.Item
-            className="w-full"
-            name="user_phone_number"
-            rules={[
-              {
-                required: true,
-                message: "Please input your phone number!",
-              },
-            ]}
-          >
-            <InputNumber
-              prefix={<Phone size={15} strokeWidth={1.5} />}
-              placeholder="phone number"
-              className="border-gray-500 w-full text-base"
-            />
-          </Form.Item>
-        </div>
-
-        <Form.Item
-          name="user_store_name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your store name!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<Store size={15} strokeWidth={1.5} />}
-            placeholder="Store Name"
-            className="border-gray-500 py-2 text-base"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="user_store_bio"
-          rules={[
-            {
-              required: true,
-              message: "Please input your store bio!",
-            },
-          ]}
-        >
-          <TextArea
-            placeholder="Store Bio"
-            className="border-gray-500 py-2 !h-40 text-base"
-          />
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            type="default"
-            htmlType="submit"
-            loading={submitting}
-            className="login-form-button bg-gray-900 text-white h-10 font-medium uppercase tracking-wider px-5"
-          >
-            {submitting ? <>UPDATING...</> : <>UPDATE</>}
-          </Button>
-        </Form.Item>
-      </Form>
+      )}
     </div>
   );
 };
