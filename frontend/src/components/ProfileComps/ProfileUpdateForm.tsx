@@ -11,11 +11,24 @@ import {
 } from "antd";
 import { Mail, MapPin, Phone, Store, User2 } from "lucide-react";
 import TextArea from "antd/es/input/TextArea";
-// import { useSession } from "next-auth/react";
 import { BACKEND_URL } from "@/app/page";
 import Swal from "sweetalert2";
 
-const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
+interface ProfileData {
+  user_id?: string;
+  user_updated_at?: any;
+  user_email_verified?: boolean;
+}
+
+interface ProfileUpdateFormProps {
+  data: ProfileData;
+  onDataUpdate: () => void;
+}
+
+const ProfileUpdateForm: React.FC<ProfileUpdateFormProps> = ({
+  data,
+  onDataUpdate,
+}) => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
@@ -338,7 +351,7 @@ const ProfileUpdateForm: React.FC = ({ data, onDataUpdate }) => {
       ) : (
         <div className="flex flex-col gap-4">
           {Array(10)
-            .fill()
+            .fill(10)
             .map((_, index) => (
               <Skeleton.Input
                 key={index}

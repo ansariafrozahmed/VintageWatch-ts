@@ -20,13 +20,25 @@ PRODUCT_LISTING
 lid				(int8)
 created_at			(timestampz)
 updated_at			(timestampz)
-title				(text)
-description			(text)
-features			(jsonb)
-condition			(text)
-brand_name			(text)
-contact_country_code		(int2)
-contact_number			(int8)
-whatsapp_country_code		(int2)
-whatsapp_number			(int8)
-uploaded_by_user_id		(int8)
+type_of_watch
+brand
+model
+reference_number
+condition
+scope_of_delivery
+
+BASIC INFO
+gender
+movement
+description
+case_diameter
+
+price
+
+gallery_image
+
+PERSONAL INFORMATION
+seller_name
+date_of_birth
+address
+contact_number

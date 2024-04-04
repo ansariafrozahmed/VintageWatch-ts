@@ -4,11 +4,12 @@ import { Check, Mail, MapPin, Plus, User, Verified } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import ProfileUpdateForm from "./ProfileUpdateForm";
-import { Form, Input, Modal, Skeleton, Tooltip } from "antd";
+import { FloatButton, Form, Input, Modal, Skeleton, Tooltip } from "antd";
 import Link from "next/link";
 import { Button } from "@material-tailwind/react";
 import Swal from "sweetalert2";
 import { useForm } from "antd/es/form/Form";
+import ButtonGroup from "antd/es/button/button-group";
 
 interface ProfileData {
   user_eligible_for_listing: boolean;
@@ -114,7 +115,7 @@ const AccountDetails: React.FC = () => {
           const response = await fetch(
             `${BACKEND_URL}/api/getUserProfileData/${profileId}`,
             {
-              method: "POST",
+              method: "GET",
             }
           );
           if (!response.ok) {
@@ -138,18 +139,18 @@ const AccountDetails: React.FC = () => {
     setShouldRefetch(!shouldRefetch);
   };
 
-  if (status === "unauthenticated") {
-    return (
-      <div className="h-full py-20 w-full flex flex-col items-center justify-center">
-        <Link href={"/auth/signin"}>
-          <Button className="tracking-widest font-medium flex gap-1">
-            <User size={15} />
-            Please login first
-          </Button>
-        </Link>
-      </div>
-    );
-  }
+  // if (status === "unauthenticated") {
+  //   return (
+  //     <div className="h-full py-20 w-full flex flex-col items-center justify-center">
+  //       <Link href={"/auth/signin"}>
+  //         <Button className="tracking-widest font-medium flex gap-1">
+  //           <User size={15} />
+  //           Please login first
+  //         </Button>
+  //       </Link>
+  //     </div>
+  //   );
+  // }
 
   // if (status === "loading" || !profileData) {
   //   console.log(status);
@@ -160,12 +161,34 @@ const AccountDetails: React.FC = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-5 w-full p-5 lg:py-5 lg:px-10">
       <div className="fixed z-50 bottom-5 right-5">
-        <Link href={"/new-listing"}>
-          <Button className="flex items-center gap-1 hover:scale-100 active:scale-95 tracking-widest font-medium">
-            <Plus size={20} />
-            <span className="hidden lg:block">New Listing</span>
-          </Button>
-        </Link>
+        {profileData?.user_eligible_for_listing ? (
+          <>
+            <Link href={"/new-listing"}>
+              <button
+                className="align-middle hover:scale-105 select-none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] flex items-center gap-2"
+                type="button"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1"
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                  ></path>
+                </svg>
+                New Listing
+              </button>
+            </Link>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="w-full lg:w-1/2">
         {profileData ? (

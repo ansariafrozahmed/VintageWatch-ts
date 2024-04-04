@@ -17,4 +17,9 @@ app.use(
 
 app.use("/api", user);
 
+app.get("/", (req, res) => {
+  // Redirect to specific URL
+  res.redirect("https://vintagewatch.vercel.app/");
+});
+
 app.listen(PORT, () => console.log(`BACKEND RUNNING ON ${PORT}`));

@@ -99,9 +99,8 @@ app.post("/userSignin", async (req, res) => {
 });
 
 //GET User Data By ID Api
-app.post("/getUserProfileData/:id", async (req, res) => {
+app.get("/getUserProfileData/:id", async (req, res) => {
   const { id } = req.params;
-  // console.log(id);
   try {
     const query =
       "SELECT user_id, user_first_name, user_last_name, user_email, user_profile_picture, user_city, user_phone_code, user_phone_number, user_eligible_for_listing, user_created_at, user_updated_at, user_store_name, user_store_bio, user_country, user_state, user_zip_code, user_email_verified FROM vwuser WHERE user_id = $1;";

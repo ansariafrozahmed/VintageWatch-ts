@@ -4,21 +4,21 @@ import Wrapper from "./Wrapper";
 import Link from "next/link";
 import Menu from "./Menu";
 import MenuMobile from "./MenuMobile";
-
-import { BsPerson } from "react-icons/bs";
 import { BiMenuAltRight } from "react-icons/bi";
 import { VscChromeClose } from "react-icons/vsc";
 import { signOut, useSession } from "next-auth/react";
-import { Popover } from "antd";
+import { Popover, Tag } from "antd";
 import { LogOut, Plus, ScrollText, Settings, User } from "lucide-react";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/app/page";
 
 const Header = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showCatMenu, setShowCatMenu] = useState(false);
+  const [profile, setProfile] = useState(null);
   // const [show, setShow] = useState("translate-y-0");
   // const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -37,6 +37,33 @@ const Header = () => {
   //     window.removeEventListener("scroll", controlNavBar);
   //   };
   // }, [lastScrollY]);
+
+  const getUserProfileData = async () => {
+    if (!session?.user) return;
+
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/getUserProfileData/${session.user.id}`
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch user profile data: ${response.status}`
+        );
+      }
+      const result = await response.json();
+
+      setProfile(result);
+    } catch (error) {
+      console.error("Error fetching user profile data:", error);
+      // Handle error (e.g., show a notification to the user)
+    }
+  };
+
+  useEffect(() => {
+    if (session) {
+      getUserProfileData();
+    }
+  }, [session]);
 
   const handleSignOut = () => {
     Swal.fire({
@@ -65,11 +92,24 @@ const Header = () => {
   const content = (
     <div className="w-[200px]">
       <div className=" py-4 px-2">
+        {profile?.user_eligible_for_listing ? (
+          <>
+            <Tag color="#097969" className="">
+              Seller
+            </Tag>
+          </>
+        ) : (
+          <>
+            <Tag color="#A020F0" className="">
+              User
+            </Tag>
+          </>
+        )}
         <h2 className="text-base font-medium">
-          {session?.user?.first_name} {session?.user?.last_name}
+          {profile?.user_first_name} {profile?.user_last_name}
         </h2>
         <h3 className="-mt-1 text-xs line-clamp-1 text-gray-700">
-          {session?.user?.email}
+          {profile?.user_email}
         </h3>
       </div>
       <hr className="py-1" />
@@ -80,18 +120,24 @@ const Header = () => {
             My Account
           </li>
         </Link>
-        <Link href={"/new-listing"}>
-          <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
-            <Plus size={18} />
-            New Listing
-          </li>
-        </Link>
-        <Link href={"/my-listing"}>
-          <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
-            <ScrollText size={18} />
-            My Listing
-          </li>
-        </Link>
+        {profile?.user_eligible_for_listing ? (
+          <>
+            <Link href={"/new-listing"}>
+              <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
+                <Plus size={18} />
+                New Listing
+              </li>
+            </Link>
+            <Link href={"/my-listing"}>
+              <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
+                <ScrollText size={18} />
+                My Listing
+              </li>
+            </Link>
+          </>
+        ) : (
+          <></>
+        )}
         <Link href={"/settings"}>
           <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
             <Settings size={18} />
