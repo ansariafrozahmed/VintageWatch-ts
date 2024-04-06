@@ -19,6 +19,7 @@ const Header = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showCatMenu, setShowCatMenu] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
   // const [show, setShow] = useState("translate-y-0");
   // const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -40,7 +41,7 @@ const Header = () => {
 
   const getUserProfileData = async () => {
     if (!session?.user) return;
-
+    setLoading(true);
     try {
       const response = await fetch(
         `${BACKEND_URL}/api/getUserProfileData/${session.user.id}`
@@ -53,6 +54,7 @@ const Header = () => {
       const result = await response.json();
 
       setProfile(result);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching user profile data:", error);
       // Handle error (e.g., show a notification to the user)
@@ -90,69 +92,75 @@ const Header = () => {
   };
 
   const content = (
-    <div className="w-[200px]">
-      <div className=" py-4 px-2">
-        {profile?.user_eligible_for_listing ? (
-          <>
-            <Tag color="#097969" className="">
-              Seller
-            </Tag>
-          </>
-        ) : (
-          <>
-            <Tag color="#A020F0" className="">
-              User
-            </Tag>
-          </>
-        )}
-        <h2 className="text-base font-medium">
-          {profile?.user_first_name} {profile?.user_last_name}
-        </h2>
-        <h3 className="-mt-1 text-xs line-clamp-1 text-gray-700">
-          {profile?.user_email}
-        </h3>
-      </div>
-      <hr className="py-1" />
-      <ul className="space-y-1">
-        <Link href={"/profile"}>
-          <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
-            <User size={18} />
-            My Account
-          </li>
-        </Link>
-        {profile?.user_eligible_for_listing ? (
-          <>
-            <Link href={"/new-listing"}>
+    <>
+      {loading ? (
+        <div className="w-[200px] bg-white p-5">Loading...</div>
+      ) : (
+        <div className="w-[200px]">
+          <div className=" py-4 px-2">
+            {profile?.user_eligible_for_listing ? (
+              <>
+                <Tag color="#097969" className="">
+                  Seller
+                </Tag>
+              </>
+            ) : (
+              <>
+                <Tag color="#A020F0" className="">
+                  User
+                </Tag>
+              </>
+            )}
+            <h2 className="text-base font-medium">
+              {profile?.user_first_name} {profile?.user_last_name}
+            </h2>
+            <h3 className="-mt-1 text-xs line-clamp-1 text-gray-700">
+              {profile?.user_email}
+            </h3>
+          </div>
+          <hr className="py-1" />
+          <ul className="space-y-1">
+            <Link href={"/profile"}>
               <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
-                <Plus size={18} />
-                New Listing
+                <User size={18} />
+                My Account
               </li>
             </Link>
-            <Link href={"/my-listing"}>
+            {profile?.user_eligible_for_listing ? (
+              <>
+                <Link href={"/new-listing"}>
+                  <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
+                    <Plus size={18} />
+                    New Listing
+                  </li>
+                </Link>
+                <Link href={"/my-listing"}>
+                  <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
+                    <ScrollText size={18} />
+                    My Listing
+                  </li>
+                </Link>
+              </>
+            ) : (
+              <></>
+            )}
+            <Link href={"/settings"}>
               <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
-                <ScrollText size={18} />
-                My Listing
+                <Settings size={18} />
+                Settings
               </li>
             </Link>
-          </>
-        ) : (
-          <></>
-        )}
-        <Link href={"/settings"}>
-          <li className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2">
-            <Settings size={18} />
-            Settings
-          </li>
-        </Link>
-        <li
-          onClick={handleSignOut}
-          className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2"
-        >
-          <LogOut size={18} />
-          Sign Out
-        </li>
-      </ul>
-    </div>
+            <li
+              onClick={handleSignOut}
+              className="flex hover:bg-gray-100 transition-all ease-in-out cursor-pointer p-2 rounded-lg items-center gap-2"
+            >
+              <LogOut size={18} />
+              Sign Out
+            </li>
+          </ul>
+        </div>
+      )}
+    </>
   );
 
   return (

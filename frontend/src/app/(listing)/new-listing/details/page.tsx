@@ -5,7 +5,7 @@ import React from "react";
 const NewListingDetails = () => {
   return (
     <>
-      <div className="w-full relative px-5 py-8 md:p-10 lg:px-40 lg:py-10 space-y-5">
+      <div className="relative px-5 py-8 md:p-10 lg:px-40 lg:py-10 space-y-5">
         <div>
           <h2 className="text-3xl lg:text-4xl">Listing Details</h2>
           <div className="flex gap-2 items-center border border-brown-500 p-3 rounded-lg my-2 shadow-sm">

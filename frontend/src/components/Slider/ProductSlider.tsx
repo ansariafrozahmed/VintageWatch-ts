@@ -67,7 +67,7 @@ const ProductSlider = () => {
             .fill()
             .map((index) => (
               <SwiperSlide key={index}>
-                <div className="border border-gray-600 shadow-md ">
+                <div className="">
                   <Link href={"/"}>
                     <div className="aspect-[3/4]">
                       <img
@@ -76,7 +76,7 @@ const ProductSlider = () => {
                         alt=""
                       />
                     </div>
-                    <div className="px-5 py-2 space-y-1 text-center">
+                    <div className=" py-2 space-y-1 text-left">
                       <h2 className="text-gray-700 text-sm">Rolex</h2>
                       <h3 className="line-clamp-1">
                         Vintage watch and many more watches

@@ -5,8 +5,9 @@ import {
   type FormProps,
   Button,
   Select,
-  InputNumber,
   Divider,
+  Tooltip,
+  InputNumber,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import {
@@ -14,8 +15,12 @@ import {
   MinusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "antd/es/form/Form";
+import { BACKEND_URL } from "@/app/page";
+import Swal from "sweetalert2";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type FieldType = {
   type_of_watch?: string;
@@ -28,6 +33,7 @@ type FieldType = {
   movement?: string;
   description?: string;
   price?: number;
+  title?: string;
 };
 
 const prefixSelector = (
@@ -44,21 +50,65 @@ const prefixSelector = (
 );
 
 const NewListingForm: React.FC = () => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const [loading, setLoading] = useState(false);
   const [form] = useForm();
+  const userId = session?.user?.id;
+
   const selectAfter = (
     <Select defaultValue="INR">
       <Select.Option value="INR">INR</Select.Option>
       <Select.Option value="USD">USD</Select.Option>
     </Select>
   );
-  const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-    console.log("Success:", values);
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    // console.log("Success:", values);
+    setLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/addNewListing`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...values, userId }),
+      });
+      if (response.ok) {
+        form.resetFields();
+        Swal.fire({
+          title: "Success!",
+          text: "You listing has been created successfully!",
+          icon: "success",
+        }).then(() => {
+          router.push("/my-listing");
+        });
+      } else {
+        Swal.fire({
+          title: "Failed!",
+          text: "Please check your listing details!",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Failed!",
+        text: "Please check your listing details!",
+        icon: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
     errorInfo
   ) => {
-    console.log("Failed:", errorInfo);
+    // console.log("Failed:", errorInfo);
+    Swal.fire({
+      title: "Failed!",
+      text: "Please provide all required details!",
+      icon: "error",
+    });
   };
 
   return (
@@ -114,6 +164,19 @@ const NewListingForm: React.FC = () => {
             name="model"
             rules={[
               { required: true, message: "Please enter your watch model!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item<FieldType>
+            label="Title"
+            name="title"
+            rules={[
+              {
+                required: true,
+                message: "Please input your title!",
+              },
             ]}
           >
             <Input />
@@ -266,7 +329,10 @@ const NewListingForm: React.FC = () => {
               { required: true, message: "Please input your phone number!" },
             ]}
           >
-            <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
+            <InputNumber
+              addonBefore={prefixSelector}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
 
           <div className=" ">
@@ -294,7 +360,7 @@ const NewListingForm: React.FC = () => {
             {(fields, { add, remove }, { errors }) => (
               <>
                 {fields.map((field, index) => (
-                  <Form.Item label={"Feature"} required={false} key={field.key}>
+                  <Form.Item required={false} key={field.key}>
                     <Form.Item
                       {...field}
                       validateTrigger={["onChange", "onBlur"]}
@@ -309,15 +375,14 @@ const NewListingForm: React.FC = () => {
                     >
                       <Input style={{ width: "90%" }} />
                     </Form.Item>
-                    {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button ml-2"
-                        onClick={() => remove(field.name)}
-                      />
-                    ) : null}
+
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button ml-2"
+                      onClick={() => remove(field.name)}
+                    />
                   </Form.Item>
                 ))}
-                <Form.Item wrapperCol={{ offset: 5 }}>
+                <Form.Item>
                   <Button
                     type="dashed"
                     onClick={() => add()}
@@ -331,19 +396,39 @@ const NewListingForm: React.FC = () => {
             )}
           </Form.List>
 
-          <Form.Item wrapperCol={{ offset: 5 }}>
+          <Form.Item>
             <Button
               type="default"
-              className="align-middle select-none font-sans font-normal hover:!text-white hover:!bg-gradient-to-tr text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm tracking-wider py-3 px-6 rounded-lg bg-gradient-to-tr from-brown-900 to-brown-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] flex items-center gap-2"
+              className="align-middle inline-flex select-none font-sans font-normal hover:!text-white hover:!bg-gradient-to-tr text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-sm tracking-wider py-3 px-6 rounded-lg bg-gradient-to-tr from-brown-900 to-brown-800 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] items-center gap-2"
               htmlType="submit"
+              loading={loading}
             >
-              Submit Listing
+              {loading ? <>Submitting Listing...</> : <>Submit Listing</>}
             </Button>
           </Form.Item>
         </Form>
       </div>
-      <div className="sticky h-full top-[100px] hidden lg:block w-[30%]">
-        PRODUCT PREVIEW
+      <div className="sticky h-full top-[100px] hidden lg:block w-[30%] p-5">
+        <Tooltip
+          title={
+            "This is just a preview listing card, doesn't represent any actual watch details."
+          }
+        >
+          <div className="border shadow-lg p-5 border-gray-300 rounded-xl overflow-hidden">
+            <div className="w-full flex items-center justify-center">
+              <img
+                className="h-full w-[90%] object-contain"
+                src="/placeholder.png"
+                alt=""
+              />
+            </div>
+            <div className="">
+              <h2 className="text-gray-700 text-xs font-medium">ROLEX</h2>
+              <h2 className="text-gray-900">Rolex Submariner Date</h2>
+              <h2 className="text-gray-900 pt-2 font-medium">Rs. 100,000</h2>
+            </div>
+          </div>
+        </Tooltip>
       </div>
     </div>
   );

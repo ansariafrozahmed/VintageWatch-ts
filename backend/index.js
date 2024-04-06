@@ -4,6 +4,7 @@ const app = express();
 
 // Routes
 const user = require("./routes/user");
+const listing = require("./routes/listing");
 const PORT = 4000;
 
 app.use(express.json());
@@ -16,9 +17,9 @@ app.use(
 );
 
 app.use("/api", user);
+app.use("/api", listing);
 
 app.get("/", (req, res) => {
-  // Redirect to specific URL
   res.redirect("https://vintagewatch.vercel.app/");
 });
 
