@@ -8,9 +8,12 @@ import {
   Divider,
   Tooltip,
   InputNumber,
+  Upload,
+  message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import {
+  InboxOutlined,
   InfoCircleOutlined,
   MinusCircleOutlined,
   PlusOutlined,
@@ -21,6 +24,8 @@ import { BACKEND_URL } from "@/app/page";
 import Swal from "sweetalert2";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Dragger from "antd/es/upload/Dragger";
+import { UploadFile } from "antd/es/upload";
 
 type FieldType = {
   type_of_watch?: string;
@@ -34,7 +39,12 @@ type FieldType = {
   description?: string;
   price?: number;
   title?: string;
+  gallery_image?: any;
 };
+
+interface User {
+  id: string;
+}
 
 const prefixSelector = (
   <Form.Item
@@ -42,7 +52,7 @@ const prefixSelector = (
     rules={[{ required: true, message: "Please select your currency!" }]}
     noStyle
   >
-    <Select style={{ width: 70 }}>
+    <Select style={{ width: 100 }}>
       <Select.Option value="INR">INR</Select.Option>
       <Select.Option value="USD">USD</Select.Option>
     </Select>
@@ -51,27 +61,49 @@ const prefixSelector = (
 
 const NewListingForm: React.FC = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [form] = useForm();
-  const userId = session?.user?.id;
+  const user = session?.user as User;
 
-  const selectAfter = (
-    <Select defaultValue="INR">
-      <Select.Option value="INR">INR</Select.Option>
-      <Select.Option value="USD">USD</Select.Option>
-    </Select>
-  );
-  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+  // Access the id property safely
+  const userId = user?.id;
+
+  const [fileList, setFileList] = useState<UploadFile<any>[]>([]);
+
+  const handleFileUpload = ({
+    file,
+    fileList,
+  }: {
+    file: UploadFile<any>;
+    fileList: UploadFile<any>[];
+  }) => {
+    const limit = 5;
+    if (fileList.length > limit) {
+      fileList.splice(-1);
+      message.error(`Only ${limit} images can be uploaded.`);
+    } else {
+      setFileList([...fileList]);
+    }
+  };
+
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values: any) => {
     // console.log("Success:", values);
     setLoading(true);
+    const formData = new FormData();
+    // Append other form data
+    Object.keys(values).forEach((key: string) => {
+      formData.append(key, values[key]);
+    });
+    formData.append("userId", userId);
+    // Append uploaded images
+    fileList.forEach((file: UploadFile<any>) => {
+      formData.append("images", file.originFileObj);
+    });
     try {
       const response = await fetch(`${BACKEND_URL}/api/addNewListing`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...values, userId }),
+        body: formData,
       });
       if (response.ok) {
         form.resetFields();
@@ -309,6 +341,27 @@ const NewListingForm: React.FC = () => {
               className="!h-24"
               placeholder="For example, Where did you buy your watch ? Does it still have a warranty ? Has it been repaired ? Is the watch damaged ?"
             />
+          </Form.Item>
+
+          <Form.Item label="Gallery Image">
+            <Dragger
+              multiple
+              listType="picture"
+              fileList={fileList}
+              beforeUpload={() => false}
+              onChange={handleFileUpload}
+            >
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">
+                Click or drag file to this area to upload
+              </p>
+              <p className="ant-upload-hint">
+                Support for a single or bulk upload. Strictly prohibited from
+                uploading company data or other banned files.
+              </p>
+            </Dragger>
           </Form.Item>
 
           <div className=" ">

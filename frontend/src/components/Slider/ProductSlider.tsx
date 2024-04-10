@@ -9,6 +9,7 @@ import "swiper/css/pagination";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { BACKEND_URL } from "@/app/page";
+import Card from "../ProductCard/Card";
 
 const ProductSlider = () => {
   return (
@@ -44,22 +45,22 @@ const ProductSlider = () => {
           breakpoints={{
             // when window width is >= 1200px (desktop)
             1200: {
-              slidesPerView: 5,
-            },
-            1000: {
-              slidesPerView: 5,
-            },
-            800: {
               slidesPerView: 4,
             },
-            600: {
+            1000: {
+              slidesPerView: 4,
+            },
+            800: {
               slidesPerView: 3,
             },
-            400: {
+            600: {
               slidesPerView: 2,
             },
+            400: {
+              slidesPerView: 1.5,
+            },
             300: {
-              slidesPerView: 2,
+              slidesPerView: 1.5,
             },
           }}
         >
@@ -67,23 +68,7 @@ const ProductSlider = () => {
             .fill()
             .map((index) => (
               <SwiperSlide key={index}>
-                <div className="">
-                  <Link href={"/"}>
-                    <div className="aspect-[3/4]">
-                      <img
-                        className="object-cover object-center h-full w-full"
-                        src="https://images.pexels.com/photos/47856/rolex-wrist-watch-clock-gmt-47856.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                        alt=""
-                      />
-                    </div>
-                    <div className=" py-2 space-y-1 text-left">
-                      <h2 className="text-gray-700 text-sm">Rolex</h2>
-                      <h3 className="line-clamp-1">
-                        Vintage watch and many more watches
-                      </h3>
-                    </div>
-                  </Link>
-                </div>
+                <Card />
               </SwiperSlide>
             ))}
           <div className="swiper-button-next !text-white"></div>

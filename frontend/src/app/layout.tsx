@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextTopLoader />
+        <NextTopLoader color="rgb(141 110 99)" />
         <main>
           <AuthProvider>
             <Header />
